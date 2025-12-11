@@ -4,27 +4,26 @@ import json
 HOST = "127.0.0.1"
 PORT = 5200
 
+COURSES = {
+    "1": "MSc in Cyber Security",
+    "2": "MSc Information Systems & Computing",
+    "3": "MSc Data Analytics"
+}
+
 def collect_input():
-    name = input("Enter full name: ")
-    address = input("Enter address: ")
-    qualifications = input("Enter educational qualifications: ")
+    name = input("Enter full name: ").strip()
+    address = input("Enter address: ").strip()
+    qualifications = input("Enter educational qualifications: ").strip()
 
     print("\nCourses:")
-    print("1. MSc in Cyber Security")
-    print("2. MSc Information Systems & Computing")
-    print("3. MSc Data Analytics")
+    for key, course in COURSES.items():
+        print(f"  {key}. {course}")
 
-    course_choice = input("Pick course (1/2/3): ")
+    course_choice = input("Pick course (1/2/3): ").strip()
+    course = COURSES.get(course_choice, COURSES["3"])
 
-    if course_choice == "1":
-        course = "MSc in Cyber Security"
-    elif course_choice == "2":
-        course = "MSc Information Systems & Computing"
-    else:
-        course = "MSc Data Analytics"
-
-    start_year = input("Enter start year (YYYY): ")
-    start_month = input("Enter start month: ")
+    start_year = input("Enter start year (YYYY): ").strip()
+    start_month = input("Enter start month: ").strip()
 
     return {
         "name": name,
@@ -42,7 +41,6 @@ def send_to_server(data):
 
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((HOST, PORT))
-
         client_socket.send(json_data.encode())
 
         response = client_socket.recv(4096).decode()
@@ -50,8 +48,10 @@ def send_to_server(data):
         print(response)
 
         client_socket.close()
+    except ConnectionRefusedError:
+        print("Error: Could not connect to server. Is it running?")
     except Exception as e:
-        print("Error:", e)
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
